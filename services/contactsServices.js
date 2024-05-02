@@ -12,15 +12,15 @@ export async function listContacts() {
   return JSON.parse(data);
 }
 
-export async function getContactById(contactId) {
+export async function getContactById(id) {
   const contacts = await listContacts();
-  const result = contacts.find((item) => item.id === contactId) || null;
+  const result = contacts.find((item) => item.id === id) || null;
   return result;
 }
 
-export async function removeContact(contactId) {
+export async function removeContact(id) {
   const contacts = await listContacts();
-  const index = contacts.findIndex((item) => item.id === contactId);
+  const index = contacts.findIndex((item) => item.id === id);
   if (index === -1) {
     return null;
   }
@@ -42,4 +42,15 @@ export async function addContact(name, email, phone) {
   await updateContact(contacts);
 
   return newContact;
+}
+
+export async function updateContactById(id, data) {
+  const contacts = await listContacts();
+  const index = contacts.findIndex((item) => item.id === id);
+  if (index === -1) {
+    return null;
+  }
+  contacts[index] = { ...contacts[index], ...data };
+  await updateContact(contacts);
+  return contacts[index];
 }
