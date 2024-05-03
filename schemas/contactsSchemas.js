@@ -8,7 +8,9 @@ export const createContactSchema = Joi.object({
       tlds: { allow: ["com", "net"] },
     })
     .required(),
-  phone: Joi.string().pattern(new RegExp("^+?3?8?(0d{9})$")).required(),
+  phone: Joi.string()
+    .required()
+    .pattern(/^\(\d{3}\)\s\d{3}-\d{4}$/),
 });
 
 export const updateContactSchema = Joi.object({
@@ -17,5 +19,5 @@ export const updateContactSchema = Joi.object({
     minDomainSegments: 2,
     tlds: { allow: ["com", "net"] },
   }),
-  phone: Joi.string().pattern(new RegExp("^+?3?8?(0d{9})$")),
+  phone: Joi.string().pattern(/^\(\d{3}\)\s\d{3}-\d{4}$/),
 });
