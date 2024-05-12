@@ -11,6 +11,7 @@ export const createContactSchema = Joi.object({
   phone: Joi.string()
     .required()
     .pattern(/^\(\d{3}\)\s\d{3}-\d{4}$/),
+  favorite: Joi.boolean(),
 });
 
 export const updateContactSchema = Joi.object({
@@ -20,4 +21,5 @@ export const updateContactSchema = Joi.object({
     tlds: { allow: ["com", "net"] },
   }),
   phone: Joi.string().pattern(/^\(\d{3}\)\s\d{3}-\d{4}$/),
+  favorite: Joi.boolean(),
 });
