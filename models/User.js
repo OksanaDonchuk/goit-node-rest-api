@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { emailRegexp } from "../constants/user-constants.js";
 import { handleSaveError, setUpdateSettings } from "./hooks.js";
 
 const userSchema = new Schema(
@@ -11,7 +12,16 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Email is required"],
       unique: true,
+      match: emailRegexp,
     },
   },
   { versionKey: false, timestamps: true }
 );
+
+userSchema.post("save", handleSaveError);
+userSchema.pre("findOneAndUpdate", setUpdateSettings);
+userSchema.post("findOneAndUpdate", handleSaveError);
+
+const User = model("user", userSchema);
+
+export default User;
