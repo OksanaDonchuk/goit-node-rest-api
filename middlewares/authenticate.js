@@ -5,7 +5,7 @@ import { finduser } from "../services/authServices.js";
 const authenticate = async (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
-    return next(HttpError(401, "Authorization header not found"));
+    return next(HttpError(401, "Not authorized"));
   }
 
   const [bearer, token] = authorization.split(" ");
@@ -19,6 +19,11 @@ const authenticate = async (req, res, next) => {
     if (!user) {
       return next(HttpError(401, "User not found"));
     }
+
+    if (!user.token) {
+      return next(HttpError(401, "Not authorized"));
+    }
+    req.user = user;
     next();
   } catch (error) {
     next(HttpError(401, error.message));

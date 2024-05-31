@@ -4,19 +4,22 @@ import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import compareHash from "../helpers/compareHash.js";
 import { createToken } from "../helpers/jwt.js";
 
-const signup = async (req, res) => {
+const register = async (req, res) => {
   const { email } = req.body;
   const user = await authServices.finduser({ email });
   if (user) {
-    throw HttpError(409, "Email already use");
+    throw HttpError(409, "Email in use");
   }
   const newUser = await authServices.saveUser(req.body);
   res.status(201).json({
-    email: newUser.email,
+    user: {
+      email: newUser.email,
+      subscription: newUser.subscription,
+    },
   });
 };
 
-const signin = async (req, res) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await authServices.finduser({ email });
   if (!user) {
@@ -31,13 +34,37 @@ const signin = async (req, res) => {
     id,
   };
   const token = createToken(payload);
+  await authServices.updateUser({ _id: id }, { token });
 
   res.json({
     token,
+    user: {
+      email: user.email,
+      subscription: user.subscription,
+    },
+  });
+};
+
+const current = (req, res) => {
+  const { email, subscription } = req.user;
+  res.json({
+    email,
+    subscription,
+  });
+};
+
+const logout = async (req, res) => {
+  const { _id } = req.user;
+  await authServices.updateUser({ _id }, { token: "" });
+
+  res.status(204).json({
+    message: "No Content",
   });
 };
 
 export default {
-  signup: ctrlWrapper(signup),
-  signin: ctrlWrapper(signin),
+  register: ctrlWrapper(register),
+  login: ctrlWrapper(login),
+  logout: ctrlWrapper(logout),
+  current: ctrlWrapper(current),
 };
