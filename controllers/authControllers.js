@@ -62,9 +62,21 @@ const logout = async (req, res) => {
   });
 };
 
+const updateSubscription = async (req, res) => {
+  const { id } = req.params;
+  const { subscription } = req.body;
+  const result = await authServices.updateUser({ _id: id }, { subscription });
+  if (!result) {
+    throw HttpError(404, "Not found");
+  }
+
+  res.json(result);
+};
+
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   logout: ctrlWrapper(logout),
   current: ctrlWrapper(current),
+  updateSubscription: ctrlWrapper(updateSubscription),
 };
