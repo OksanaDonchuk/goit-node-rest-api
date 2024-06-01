@@ -8,7 +8,7 @@ import {
   updateSabscriptionSchema,
 } from "../schemas/authSchemas.js";
 import authenticate from "../middlewares/authenticate.js";
-import isValidId from "../middlewares/isValidId.js";
+import upload from "../middlewares/upload.js";
 
 const authRouter = express.Router();
 
@@ -31,11 +31,19 @@ authRouter.post("/logout", authenticate, authControllers.logout);
 authRouter.get("/current", authenticate, authControllers.current);
 
 authRouter.patch(
-  "/:id/subscription",
+  "/",
+  authenticate,
   isEmptyBody,
-
   validateBody(updateSabscriptionSchema),
   authControllers.updateSubscription
+);
+
+usersRouter.patch(
+  "/avatars",
+  authenticate,
+  isEmptyBody,
+  upload.single("avatar"),
+  authControllers.updateAvatar
 );
 
 export default authRouter;
