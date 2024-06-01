@@ -16,3 +16,9 @@ export const updateSabscriptionSchema = Joi.object({
     .required()
     .valid(...subscriptionList),
 });
+
+export const emailVerifySchema = Joi.object({
+  email: Joi.string().pattern(emailRegexp).required().messages({
+    required: "Missing required field email",
+  }),
+});

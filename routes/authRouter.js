@@ -6,6 +6,7 @@ import {
   authSignupSchema,
   authSigninSchema,
   updateSabscriptionSchema,
+  emailVerifySchema,
 } from "../schemas/authSchemas.js";
 import authenticate from "../middlewares/authenticate.js";
 import isValidId from "../middlewares/isValidId.js";
@@ -28,6 +29,15 @@ authRouter.post(
 );
 
 authRouter.post("/logout", authenticate, authControllers.logout);
+
+authRouter.get("/verify/:verificationToken", authControllers.verifyEmail);
+
+authRouter.post(
+  "/verify",
+  isEmptyBody,
+  validateBody(emailVerifySchema),
+  authControllers.resendingVerify
+);
 
 authRouter.get("/current", authenticate, authControllers.current);
 
