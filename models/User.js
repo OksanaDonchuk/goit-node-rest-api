@@ -14,6 +14,7 @@ const userSchema = new Schema(
       unique: true,
       math: emailRegexp,
     },
+    avatarURL: String,
     subscription: {
       type: String,
       enum: subscriptionList,

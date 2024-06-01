@@ -3,6 +3,12 @@ import HttpError from "../helpers/HttpError.js";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
 import compareHash from "../helpers/compareHash.js";
 import { createToken } from "../helpers/jwt.js";
+import fs from "fs/promises";
+import path from "path";
+import gravatar from "gravatar";
+import Jimp from "jimp";
+
+const avatarsPath = path.resolve("public", "avatars");
 
 const register = async (req, res) => {
   const { email } = req.body;
@@ -10,7 +16,8 @@ const register = async (req, res) => {
   if (user) {
     throw HttpError(409, "Email in use");
   }
-  const newUser = await authServices.saveUser(req.body);
+  const avatarURL = gravatar.url(email);
+  const newUser = await authServices.saveUser({ ...req.body, avatarURL });
   res.status(201).json({
     user: {
       email: newUser.email,
@@ -73,7 +80,24 @@ const updateSubscription = async (req, res) => {
   res.json(result);
 };
 
-const updateAvatar = async (req, res) => {};
+const updateAvatar = async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, "No file");
+  }
+
+  const { _id } = req.user;
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(avatarsPath, filename);
+
+  const editedAva = await Jimp.read(oldPath);
+  editedAva.resize(250, 250);
+  await editedAva.writeAsync(oldPath);
+
+  await fs.rename(oldPath, newPath);
+  const avatarURL = path.join("avatars", filename);
+  await authServices.updateUser({ _id }, { avatarURL });
+  res.json({ avatarURL });
+};
 
 export default {
   register: ctrlWrapper(register),
