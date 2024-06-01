@@ -33,7 +33,7 @@ authRouter.get("/current", authenticate, authControllers.current);
 authRouter.patch(
   "/:id/subscription",
   isEmptyBody,
-
+  isValidId,
   validateBody(updateSabscriptionSchema),
   authControllers.updateSubscription
 );
